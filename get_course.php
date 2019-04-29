@@ -28,22 +28,24 @@ class API
         $this->_GET = $_GET;
     }
 
-    public function get_object()
+    protected function get_object()
     {
         $response = file_get_contents(self::URL);
         return json_decode($response);
     }
 
-    public function set_rate()
+    protected function set_rate()
     {
         $array = $this->get_object();
         foreach ($array as $currency) {
             if ($currency->Cur_Abbreviation == $_GET['from']) {
                 $this->from = $currency->Cur_OfficialRate;
+                if ($currency->Cur_Scale!=1) $this->from = $this->from / $currency->Cur_Scale;
             }
 
             if ($currency->Cur_Abbreviation == $_GET['to']) {
                 $this->to = $currency->Cur_OfficialRate;
+                if ($currency->Cur_Scale!=1) $this->to = $this->to / $currency->Cur_Scale;
             }
         }
 
@@ -73,5 +75,5 @@ class API
 
 $api = new API(['from:', 'to:']);
 
-print $api->show();
+echo $api->show();
 
